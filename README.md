@@ -2,21 +2,6 @@
 
 # EXMACHINA Twitter Bot
 
-<p align="center">
-    <!-- Project Stats -->
-    <a href="https://github.com/yourusername/exmachina/issues">
-        <img src="https://img.shields.io/github/issues/yourusername/exmachina" alt="GitHub issues">
-    </a>
-    <a href="https://github.com/yourusername/exmachina/network">
-        <img src="https://img.shields.io/github/forks/yourusername/exmachina" alt="GitHub forks">
-    </a>
-    <a href="https://github.com/yourusername/exmachina/stargazers">
-        <img src="https://img.shields.io/github/stars/yourusername/exmachina" alt="GitHub stars">
-    </a>
-    <a href="https://star-history.com/#aivoyager/puti">
-        <img src="https://img.shields.io/github/stars/aivoyager/puti?style=social" alt="GitHub star chart">
-    </a>
-</p>
 
 ## About
 
