@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXMACHINA Control Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-2">EXMACHINA Control Panel</h1>
+            <p class="text-gray-400" id="agent-status">Status: Loading...</p>
+            <p class="text-gray-400" id="tweet-stats"></p>
+            <div class="mt-4 flex justify-center items-center space-x-2">
+                <span class="text-gray-400">Mode:</span>
+                <button id="mode-toggle" 
+                        class="px-3 py-1 rounded text-sm font-medium transition-colors duration-200">
+                    Loading...
+                </button>
+            </div>
+        </header>
+
+        <!-- Personality Configuration -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Agent Personality</h2>
+            <form id="personality-form" class="space-y-4">
+                <div>
+                    <label class="block mb-2">Name</label>
+                    <input type="text" name="name" class="w-full bg-gray-700 rounded p-2">
+                </div>
+                <div>
+                    <label class="block mb-2">Bio</label>
+                    <textarea name="bio" class="w-full bg-gray-700 rounded p-2" rows="3"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-2">Traits</label>
+                    <div class="grid grid-cols-2 gap-2" id="traits-container">
+                        <!-- Traits will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-2">Interests</label>
+                    <div class="grid grid-cols-2 gap-2" id="interests-container">
+                        <!-- Interests will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-2">Tone</label>
+                    <select name="tone" class="w-full bg-gray-700 rounded p-2">
+                        <!-- Tones will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="flex space-x-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="emoji_style" class="mr-2">
+                        Use Emojis
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="hashtag_style" class="mr-2">
+                        Use Hashtags
+                    </label>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    Update Personality
+                </button>
+            </form>
+        </div>
+
+        <!-- Scheduler Configuration -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Scheduler Settings</h2>
+            <form id="scheduler-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block mb-2">Tweet Interval</label>
+                        <div class="flex space-x-2">
+                            <input type="number" name="tweet_interval" min="1" 
+                                   class="w-24 bg-gray-700 rounded p-2">
+                            <select name="tweet_interval_unit" class="bg-gray-700 rounded p-2">
+                                <!-- Units will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Mention Check Interval</label>
+                        <div class="flex space-x-2">
+                            <input type="number" name="mention_check_interval" min="1" 
+                                   class="w-24 bg-gray-700 rounded p-2">
+                            <select name="mention_check_unit" class="bg-gray-700 rounded p-2">
+                                <!-- Units will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block mb-2">Active Hours</label>
+                        <div class="flex space-x-2">
+                            <input type="number" name="active_hours_start" min="0" max="23" 
+                                   class="w-24 bg-gray-700 rounded p-2" placeholder="Start">
+                            <span class="self-center">to</span>
+                            <input type="number" name="active_hours_end" min="0" max="23" 
+                                   class="w-24 bg-gray-700 rounded p-2" placeholder="End">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Max Tweets per Day</label>
+                        <input type="number" name="max_tweets_per_day" min="1" 
+                               class="w-24 bg-gray-700 rounded p-2">
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    Update Schedule
+                </button>
+            </form>
+        </div>
+
+        <!-- Manual Controls -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Manual Controls</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block mb-2">Generate Tweet</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="tweet-topic" placeholder="Topic (optional)" 
+                               class="flex-1 bg-gray-700 rounded p-2">
+                        <button onclick="generateTweet()" 
+                                class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                            Generate
+                        </button>
+                    </div>
+                    <div id="tweet-variants" class="space-y-2 mt-2">
+                        <!-- Tweet variants will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tweet History -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Tweet History</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex space-x-4">
+                        <select id="history-filter" class="bg-gray-700 rounded p-2">
+                            <option value="all">All Tweets</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="manual">Manual</option>
+                            <option value="replies">Replies</option>
+                        </select>
+                        <select id="history-sort" class="bg-gray-700 rounded p-2">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="popular">Most Popular</option>
+                        </select>
+                    </div>
+                    <button onclick="refreshHistory()" 
+                            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                        Refresh
+                    </button>
+                </div>
+                <div id="tweet-history" class="space-y-4">
+                    <!-- Tweet history will be populated here -->
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="loadMoreHistory()" 
+                            class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
+                        Load More
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Logs -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Agent Logs</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <select id="log-level" class="bg-gray-700 rounded p-2">
+                        <option value="all">All Levels</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                    </select>
+                    <button onclick="clearLogs()" 
+                            class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
+                        Clear Logs
+                    </button>
+                </div>
+                <div id="agent-logs" class="bg-gray-900 p-4 rounded h-64 overflow-y-auto font-mono text-sm">
+                    <!-- Logs will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduler Controls -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Scheduler Controls</h2>
+            <div class="flex space-x-4">
+                <button onclick="startScheduler()" 
+                        class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                    Start Scheduler
+                </button>
+                <button onclick="stopScheduler()" 
+                        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
+                    Stop Scheduler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch current agent configuration
+        async function fetchAgentInfo() {
+            const response = await fetch('/agent/info');
+            const data = await response.json();
+            
+            document.querySelector('input[name="name"]').value = data.name;
+            document.querySelector('textarea[name="bio"]').value = data.bio;
+            document.querySelector('input[name="emoji_style"]').checked = data.uses_emoji;
+            document.querySelector('input[name="hashtag_style"]').checked = data.uses_hashtags;
+            
+            // Update status
+            updateAgentStatus();
+        }
+
+        // Update agent status and stats
+        async function updateAgentStatus() {
+            const response = await fetch('/agent/status');
+            const data = await response.json();
+            
+            document.getElementById('agent-status').textContent = 
+                `Status: ${data.is_running ? 'Running' : 'Stopped'}`;
+                
+            const statsText = data.tweet_count_today > 0 
+                ? `Tweets today: ${data.tweet_count_today}, Last tweet: ${new Date(data.last_tweet_time).toLocaleTimeString()}`
+                : 'No tweets today';
+            document.getElementById('tweet-stats').textContent = statsText;
+        }
+
+        // Fetch and populate scheduler config
+        async function fetchSchedulerConfig() {
+            const response = await fetch('/agent/schedule/config');
+            const data = await response.json();
+            
+            // Populate form fields
+            document.querySelector('input[name="tweet_interval"]').value = data.tweet_interval;
+            document.querySelector('input[name="mention_check_interval"]').value = data.mention_check_interval;
+            document.querySelector('input[name="active_hours_start"]').value = data.active_hours_start;
+            document.querySelector('input[name="active_hours_end"]').value = data.active_hours_end;
+            document.querySelector('input[name="max_tweets_per_day"]').value = data.max_tweets_per_day;
+            
+            // Populate unit selectors
+            const units = data.available_units;
+            const unitSelectors = ['tweet_interval_unit', 'mention_check_unit'];
+            
+            unitSelectors.forEach(selectorName => {
+                const select = document.querySelector(`select[name="${selectorName}"]`);
+                select.innerHTML = units.map(unit => 
+                    `<option value="${unit}" ${data[selectorName] === unit ? 'selected' : ''}>
+                        ${unit}
+                    </option>`
+                ).join('');
+            });
+        }
+
+        // Update scheduler config
+        async function updateSchedulerConfig(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const config = {
+                tweet_interval: parseInt(formData.get('tweet_interval')),
+                tweet_interval_unit: formData.get('tweet_interval_unit'),
+                mention_check_interval: parseInt(formData.get('mention_check_interval')),
+                mention_check_unit: formData.get('mention_check_unit'),
+                active_hours_start: parseInt(formData.get('active_hours_start')),
+                active_hours_end: parseInt(formData.get('active_hours_end')),
+                max_tweets_per_day: parseInt(formData.get('max_tweets_per_day'))
+            };
+            
+            const response = await fetch('/agent/schedule/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            });
+            
+            if (response.ok) {
+                alert('Schedule updated successfully!');
+            } else {
+                alert('Failed to update schedule');
+            }
+        }
+
+        // Generate tweet
+        async function generateTweet() {
+            const topic = document.getElementById('tweet-topic').value;
+            const variantsContainer = document.getElementById('tweet-variants');
+            variantsContainer.innerHTML = '<div class="text-gray-400">Generating variants...</div>';
+            
+            try {
+                const response = await fetch(`/api/twitter/generate_tweet_variants${topic ? `?topic=${topic}` : ''}`);
+                const data = await response.json();
+                
+                variantsContainer.innerHTML = data.variants.map((tweet, index) => `
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">${tweet.content}</div>
+                            <button onclick="selectTweet(${index})" 
+                                    class="ml-2 bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
+                                Select
+                            </button>
+                        </div>
+                        <div class="text-gray-400 text-sm mt-1">
+                            Tone: ${tweet.tone} | Topic: ${tweet.topic}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                variantsContainer.innerHTML = '<div class="text-red-500">Failed to generate tweets</div>';
+            }
+        }
+
+        // Select tweet variant
+        function selectTweet(index) {
+            const variants = document.querySelectorAll('#tweet-variants > div');
+            const selectedTweet = variants[index].querySelector('div').textContent;
+            document.getElementById('generated-tweet').value = selectedTweet;
+        }
+
+        // Load tweet history
+        async function loadTweetHistory(filter = 'all', sort = 'newest', page = 1) {
+            const historyContainer = document.getElementById('tweet-history');
+            if (page === 1) {
+                historyContainer.innerHTML = '<div class="text-gray-400">Loading history...</div>';
+            }
+            
+            try {
+                const response = await fetch(`/api/twitter/history?filter=${filter}&sort=${sort}&page=${page}`);
+                const data = await response.json();
+                
+                const historyHtml = data.tweets.map(tweet => `
+                    <div class="bg-gray-700 rounded p-4">
+                        <div class="flex justify-between">
+                            <div class="text-sm text-gray-400">
+                                ${new Date(tweet.created_at).toLocaleString()}
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                ${tweet.type} | ${tweet.activity_type}
+                            </div>
+                        </div>
+                        <div class="mt-2">${tweet.content}</div>
+                        <div class="mt-2 text-sm text-gray-400">
+                            ❤️ ${tweet.likes} | 🔄 ${tweet.retweets} | 💬 ${tweet.replies}
+                        </div>
+                    </div>
+                `).join('');
+                
+                if (page === 1) {
+                    historyContainer.innerHTML = historyHtml;
+                } else {
+                    historyContainer.innerHTML += historyHtml;
+                }
+            } catch (error) {
+                if (page === 1) {
+                    historyContainer.innerHTML = '<div class="text-red-500">Failed to load history</div>';
+                }
+            }
+        }
+
+        // Refresh history
+        function refreshHistory() {
+            const filter = document.getElementById('history-filter').value;
+            const sort = document.getElementById('history-sort').value;
+            loadTweetHistory(filter, sort);
+        }
+
+        // Load more history
+        let currentHistoryPage = 1;
+        function loadMoreHistory() {
+            const filter = document.getElementById('history-filter').value;
+            const sort = document.getElementById('history-sort').value;
+            currentHistoryPage++;
+            loadTweetHistory(filter, sort, currentHistoryPage);
+        }
+
+        // Load and update logs
+        let lastLogId = 0;
+        async function updateLogs() {
+            const logsContainer = document.getElementById('agent-logs');
+            const logLevel = document.getElementById('log-level').value;
+            
+            try {
+                const response = await fetch(`/agent/logs?since_id=${lastLogId}&level=${logLevel}`);
+                const data = await response.json();
+                
+                if (data.logs.length > 0) {
+                    const logsHtml = data.logs.map(log => `
+                        <div class="log-entry ${log.level.toLowerCase()}">
+                            <span class="text-gray-400">${new Date(log.timestamp).toLocaleTimeString()}</span>
+                            <span class="ml-2 ${getLogLevelColor(log.level)}">${log.level}</span>
+                            <span class="ml-2">${log.message}</span>
+                        </div>
+                    `).join('');
+                    
+                    logsContainer.innerHTML += logsHtml;
+                    lastLogId = data.logs[data.logs.length - 1].id;
+                    logsContainer.scrollTop = logsContainer.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Failed to update logs:', error);
+            }
+        }
+
+        function getLogLevelColor(level) {
+            const colors = {
+                'INFO': 'text-blue-400',
+                'WARNING': 'text-yellow-400',
+                'ERROR': 'text-red-400'
+            };
+            return colors[level] || 'text-gray-400';
+        }
+
+        // Clear logs
+        async function clearLogs() {
+            const logsContainer = document.getElementById('agent-logs');
+            logsContainer.innerHTML = '';
+            lastLogId = 0;
+            await fetch('/agent/logs/clear', { method: 'POST' });
+        }
+
+        // Scheduler controls
+        async function startScheduler() {
+            await fetch('/agent/scheduler/start');
+            updateAgentStatus();
+        }
+
+        async function stopScheduler() {
+            await fetch('/agent/scheduler/stop');
+            updateAgentStatus();
+        }
+
+        // Mode management
+        async function updateModeButton(isTestMode) {
+            const button = document.getElementById('mode-toggle');
+            if (isTestMode) {
+                button.textContent = '🧪 Test Mode';
+                button.className = 'bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm font-medium';
+            } else {
+                button.textContent = '🚀 Production Mode';
+                button.className = 'bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm font-medium';
+            }
+        }
+
+        async function toggleMode() {
+            const response = await fetch('/agent/mode');
+            const data = await response.json();
+            const newMode = !data.is_test_mode;
+            
+            try {
+                const updateResponse = await fetch('/agent/mode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newMode)
+                });
+                
+                if (updateResponse.ok) {
+                    updateModeButton(newMode);
+                    // Обновляем все данные после смены режима
+                    fetchAgentInfo();
+                    fetchSchedulerConfig();
+                    loadTweetHistory();
+                    updateLogs();
+                }
+            } catch (error) {
+                console.error('Failed to switch mode:', error);
+            }
+        }
+
+        // Initialize mode toggle
+        document.getElementById('mode-toggle').addEventListener('click', toggleMode);
+
+        // Update mode status on load
+        async function initializeMode() {
+            const response = await fetch('/agent/mode');
+            const data = await response.json();
+            updateModeButton(data.is_test_mode);
+        }
+
+        // Initialize everything
+        document.getElementById('scheduler-form').addEventListener('submit', updateSchedulerConfig);
+        document.getElementById('history-filter').addEventListener('change', refreshHistory);
+        document.getElementById('history-sort').addEventListener('change', refreshHistory);
+        document.getElementById('log-level').addEventListener('change', () => {
+            const logsContainer = document.getElementById('agent-logs');
+            logsContainer.innerHTML = '';
+            lastLogId = 0;
+            updateLogs();
+        });
+
+        // Load initial data
+        fetchAgentInfo();
+        fetchSchedulerConfig();
+        loadTweetHistory();
+        updateLogs();
+        initializeMode();
+        
+        // Set up periodic updates
+        setInterval(updateAgentStatus, 5000);
+        setInterval(updateLogs, 2000);
+    </script>
+</body>
+</html> 

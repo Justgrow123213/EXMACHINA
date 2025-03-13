@@ -1,0 +1,19 @@
+client:
+  - twitter:
+      BEARER_TOKEN: "YOUR_TWITTER_BEARER_TOKEN"
+
+llm:
+  openai:
+    API_KEY: "YOUR_OPENAI_API_KEY"
+    MODEL: "gpt-4"
+
+services:
+  redis:
+    host: "localhost"
+    port: 6379
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    management_port: 15672
+    username: "admin"
+    password: "admin123" 
