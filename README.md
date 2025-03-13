@@ -2,20 +2,6 @@
 
 # EXMACHINA Twitter Bot
 
-<p align="center" style="color: aqua"><b>Twitter Automation with AI</b></p>
-
-<p align="center">
-    <a href="./README.md">
-        <img src="https://img.shields.io/badge/document-English-blue.svg" alt="EN doc">
-    </a>
-    <a href="https://opensource.org/licenses/MIT">
-        <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
-    </a>
-    <a href="./CHANGELOG.md">
-        <img src="https://img.shields.io/badge/CHANGELOG-История-blue.svg" alt="Changelog">
-    </a>
-</p>
-
 <p align="center">
     <!-- Project Stats -->
     <a href="https://github.com/yourusername/exmachina/issues">
