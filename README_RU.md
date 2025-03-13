@@ -1,3 +1,0 @@
-# EXMACHINA Twitter от
-
-<p align='center' style='color: aqua'><b>втоматизация Twitter с помощью </b></p>
